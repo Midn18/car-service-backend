@@ -6,5 +6,4 @@ import org.springframework.stereotype.Service
 @Service
 class ProfileService(
     val profileRepository: ProfileRepository
-) {
-}
+)

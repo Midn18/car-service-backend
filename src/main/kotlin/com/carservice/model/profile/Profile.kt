@@ -52,6 +52,7 @@ data class Customer(
     override val role: Set<UserRole>,
     val vehicles: List<Vehicle> = emptyList(),
     val serviceVisits: List<ServiceVisit> = emptyList(),
+    val visitCounter: Int = 0,
 ) : Profile {
     override val profileType: ProfileType
         get() = ProfileType.CUSTOMER
