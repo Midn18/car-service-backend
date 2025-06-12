@@ -1,10 +1,16 @@
 server:
-    port: 8080
+  port: 8080
 
 spring:
-    data:
-        mongodb:
-          username: "danilencomihailamdaris"
-          password: "PRAu3NUXG73PXPLK"
-          uri: "mongodb+srv://${spring.data.mongodb.username}:${spring.data.mongodb.password}@newsaggregator.iahqf.mongodb.net/?retryWrites=true&w=majority&appName=NewsAggregator"
-          database: "car-service"
+  data:
+    mongodb:
+      username: "mihaildanilenco"
+      password: "zgZr8uGhEXwEBggg"
+      uri: "mongodb+srv://${spring.data.mongodb.username}:${spring.data.mongodb.password}@learningdb.qe33ksl.mongodb.net/?retryWrites=true&w=majority&appName=LearningDB"
+#        "mongodb+srv://${spring.data.mongodb.username}:${spring.data.mongodb.password}@learningdb.qe33ksl.mongodb.net/?retryWrites=true&w=majority&appName=LearningDB"
+      database: "car-service"
+
+jwt:
+  key: uF3r@84nXyZ!bM2Lq#EtVgJzW9kPcLdQ
+  access-token-expiration: 3600000
+  refresh-token-expiration: 86400000
