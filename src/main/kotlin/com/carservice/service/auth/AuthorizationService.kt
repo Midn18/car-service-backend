@@ -1,4 +1,4 @@
-package com.carservice.service
+package com.carservice.service.auth
 
 import com.carservice.config.JwtProperties
 import com.carservice.dto.authorization.CustomerSignupRequest
@@ -6,10 +6,10 @@ import com.carservice.dto.authorization.EmployeeSignupRequest
 import com.carservice.dto.authorization.LoginRequest
 import com.carservice.model.profile.*
 import com.carservice.repository.ProfileRepository
-import org.springframework.context.annotation.Bean
+import com.carservice.validation.customerSignupValidator
+import com.carservice.validation.employeeSignUpValidator
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -19,20 +19,23 @@ import java.util.UUID.randomUUID
 class AuthorizationService(
     val profileRepository: ProfileRepository,
     val tokenService: TokenService,
-    val jwtProperties: JwtProperties
+    val jwtProperties: JwtProperties,
+    val passwordEncoder: PasswordEncoder
 ) {
 
-    @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
-
     fun signupCustomer(request: CustomerSignupRequest): Profile {
+        val result = customerSignupValidator.validate(request)
+        if (result.errors.isNotEmpty()) {
+            throw IllegalArgumentException("Invalid customer signup request: ${result.errors.joinToString(", ")}")
+        }
+
         val customer = Customer(
             id = UUID(randomUUID().mostSignificantBits, randomUUID().leastSignificantBits),
             role = setOf(UserRole.GUEST),
             firstName = request.firstName,
             lastName = request.lastName,
             email = request.email,
-            password = passwordEncoder().encode(request.password),
+            password = passwordEncoder.encode(request.password),
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
             address = request.address,
@@ -42,6 +45,11 @@ class AuthorizationService(
     }
 
     fun signupEmployee(request: EmployeeSignupRequest): Profile {
+        val result = employeeSignUpValidator.validate(request)
+        if (result.errors.isNotEmpty()) {
+            throw IllegalArgumentException("Invalid employee signup request: ${result.errors.joinToString(", ")}")
+        }
+
         if (request.role.any { !(it.isEmployeeRole() || it.isAdmin()) }) {
             throw IllegalArgumentException("Invalid role for employee")
         }
@@ -51,7 +59,7 @@ class AuthorizationService(
             firstName = request.firstName,
             lastName = request.lastName,
             email = request.email,
-            password = passwordEncoder().encode(request.password),
+            password = passwordEncoder.encode(request.password),
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
             address = request.address,
@@ -64,7 +72,7 @@ class AuthorizationService(
         val user = profileRepository.findByEmail(request.email)
             ?: throw IllegalArgumentException("Email not registered")
 
-        if (!passwordEncoder().matches(request.password, user.password)) {
+        if (!passwordEncoder.matches(request.password, user.password)) {
             throw IllegalArgumentException("Invalid credentials")
         }
 

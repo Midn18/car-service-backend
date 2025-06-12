@@ -1,4 +1,4 @@
-package com.carservice.service
+package com.carservice.service.auth
 
 import com.carservice.config.JwtProperties
 import io.jsonwebtoken.Claims

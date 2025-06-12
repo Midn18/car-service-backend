@@ -4,11 +4,11 @@ import com.carservice.model.profile.Address
 import java.time.LocalDate
 
 data class CustomerSignupRequest(
-    val firstName: String,
-    val lastName: String,
-    val email: String,
-    val password: String,
-    val phoneNumber: String,
+    override val firstName: String,
+    override val lastName: String,
+    override val email: String,
+    override val password: String,
+    override val phoneNumber: String,
     val dateOfBirth: LocalDate,
-    val address: Address
-)
+    override val address: Address
+) : SignUpRequest

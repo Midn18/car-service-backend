@@ -4,7 +4,7 @@ import com.carservice.dto.authorization.CustomerSignupRequest
 import com.carservice.dto.authorization.EmployeeSignupRequest
 import com.carservice.dto.authorization.LoginRequest
 import com.carservice.model.profile.Profile
-import com.carservice.service.AuthorizationService
+import com.carservice.service.auth.AuthorizationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

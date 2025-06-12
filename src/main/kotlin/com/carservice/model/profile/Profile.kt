@@ -78,8 +78,7 @@ data class Employee(
 data class Address(
     val street: String = "",
     val city: String = "",
-    val state: String = "",
-    val zipCode: String = "",
+    val postalCode: String = "",
     val country: String = ""
 )
 
