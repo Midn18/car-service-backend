@@ -5,12 +5,12 @@ import com.carservice.model.profile.UserRole
 import java.time.LocalDate
 
 data class EmployeeSignupRequest(
-    val firstName: String,
-    val lastName: String,
-    val email: String,
-    val password: String,
-    val phoneNumber: String,
+    override val firstName: String,
+    override val lastName: String,
+    override val email: String,
+    override val password: String,
+    override val phoneNumber: String,
     val dateOfBirth: LocalDate,
     val role: Set<UserRole>,
-    val address: Address
-)
+    override val address: Address
+) : SignUpRequest
