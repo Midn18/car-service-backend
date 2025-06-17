@@ -7,10 +7,9 @@ spring:
       username: "mihaildanilenco"
       password: "zgZr8uGhEXwEBggg"
       uri: "mongodb+srv://${spring.data.mongodb.username}:${spring.data.mongodb.password}@learningdb.qe33ksl.mongodb.net/?retryWrites=true&w=majority&appName=LearningDB"
-#        "mongodb+srv://${spring.data.mongodb.username}:${spring.data.mongodb.password}@learningdb.qe33ksl.mongodb.net/?retryWrites=true&w=majority&appName=LearningDB"
       database: "car-service"
 
 jwt:
-  key: uF3r@84nXyZ!bM2Lq#EtVgJzW9kPcLdQ
+  key: 3mB%9V@fK!mP#G7zWrXj2LoqA8UdNcYbTfQwErTyUiOpAsDfGhJkLzXcVbNmQwErT
   access-token-expiration: 3600000
   refresh-token-expiration: 86400000

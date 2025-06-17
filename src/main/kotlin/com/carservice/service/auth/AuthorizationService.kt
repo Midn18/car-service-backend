@@ -1,15 +1,11 @@
 package com.carservice.service.auth
 
-import com.carservice.config.JwtProperties
 import com.carservice.dto.authorization.CustomerSignupRequest
 import com.carservice.dto.authorization.EmployeeSignupRequest
-import com.carservice.dto.authorization.LoginRequest
 import com.carservice.model.profile.*
 import com.carservice.repository.ProfileRepository
 import com.carservice.validation.customerSignupValidator
 import com.carservice.validation.employeeSignUpValidator
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -17,10 +13,8 @@ import java.util.UUID.randomUUID
 
 @Service
 class AuthorizationService(
-    val profileRepository: ProfileRepository,
-    val tokenService: TokenService,
-    val jwtProperties: JwtProperties,
-    val passwordEncoder: PasswordEncoder
+    private val profileRepository: ProfileRepository,
+    private val passwordEncoder: PasswordEncoder,
 ) {
 
     fun signupCustomer(request: CustomerSignupRequest): Profile {
@@ -66,26 +60,5 @@ class AuthorizationService(
             role = request.role
         )
         return profileRepository.save(employee)
-    }
-
-    fun login(request: LoginRequest): String {
-        val user = profileRepository.findByEmail(request.email)
-            ?: throw IllegalArgumentException("Email not registered")
-
-        if (!passwordEncoder.matches(request.password, user.password)) {
-            throw IllegalArgumentException("Invalid credentials")
-        }
-
-        val userDetails = User(
-            user.email,
-            user.password,
-            user.role.map { SimpleGrantedAuthority(it.name) }
-        )
-
-        return tokenService.generate(
-            userDetails = userDetails,
-            expirationDate = Date(System.currentTimeMillis() + jwtProperties.accessTokenExpiration),
-            additionalClaims = mapOf("roles" to user.role.map { it.name })
-        )
     }
 }
