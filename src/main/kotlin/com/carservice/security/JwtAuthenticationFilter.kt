@@ -37,7 +37,6 @@ class JwtAuthenticationFilter(
         val username = (auth.principal as UserSecurity).username
         val roles = (auth.principal as UserSecurity).authorities.map { it.authority }
         val token: String = jwtTokenUtil.generateToken(username = username, claims = mapOf("roles" to roles))
-        println(token)
         res.addHeader("Authorization", "Bearer $token")
         res.addHeader("Access-Control-Expose-Headers", "Authorization")
     }
