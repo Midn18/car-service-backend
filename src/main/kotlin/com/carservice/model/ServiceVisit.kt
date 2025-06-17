@@ -13,14 +13,14 @@ data class ServiceVisit(
     val visitId: UUID = UUID.randomUUID(),
     val vehicleVin: String = "",
     val serviceDate: LocalDate,
-    val serviceType: ServiceTypeEnum,
+    val serviceType: ServiceType,
     val employee: SkinnyProfile,
     val customer: SkinnyProfile,
     val price: Double = 0.0,
     val additionalDetails: String = "",
 )
 
-enum class ServiceTypeEnum {
+enum class ServiceType {
     OIL_CHANGE,
     TIRE_ROTATION,
     BRAKE_SERVICE,

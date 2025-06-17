@@ -12,16 +12,16 @@ data class Vehicle(
     val model: String = "",
     val year: Int = 0,
     val engineDisplacement: Double,
-    val fuelType: FuelTypeEnum,
+    val fuelType: FuelType,
     val color: String = "",
     val kilometers: Int,
     val ownerId: UUID,
-    val vehicleType: VehicleTypeEnum,
+    val vehicleType: VehicleType,
     val serviceHistory: List<ServiceVisit>,
     val registrationNumber: String = "",
 )
 
-enum class VehicleTypeEnum {
+enum class VehicleType {
     CAR,
     TRUCK,
     MOTORCYCLE,
@@ -29,7 +29,7 @@ enum class VehicleTypeEnum {
     VAN;
 }
 
-enum class FuelTypeEnum {
+enum class FuelType {
     GASOLINE,
     DIESEL,
     ELECTRIC,

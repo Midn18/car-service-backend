@@ -27,10 +27,4 @@ class AuthorizationController(
         val profile = authService.signupEmployee(request)
         return ResponseEntity.ok(profile)
     }
-
-    @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): ResponseEntity<Map<String, String>> {
-        val token = authService.login(request)
-        return ResponseEntity.ok(mapOf("token" to token))
-    }
 }
