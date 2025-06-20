@@ -1,0 +1,186 @@
+openapi: 3.0.1
+info:
+  title: Car Service API
+  version: 1.0.0
+  description: API for managing car services
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT Token
+          headers:
+            Authorization:
+              description: JWT Bearer token
+              schema:
+                type: string
+        '401':
+          description: Invalid credentials
+
+  /api/auth/signup/employee:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeSignupRequest'
+            example:
+              firstName: "John"
+              lastName: "Doe"
+              email: "john.doe@example.com"
+              password: "Test1234!"
+              phoneNumber: "+37367123456"
+              dateOfBirth: "1990-01-01"
+              role: "ELECTRICIAN"
+              address:
+                street: "Str. Paris"
+                city: "Chisinau"
+                postalCode: "2001"
+                country: "Moldova"
+      responses:
+        '201':
+          description: Employee created successfully
+        '400':
+          description: Bad request, invalid input
+
+  /api/auth/signup/customer:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerSignupRequest'
+            example:
+              firstName: "Jane"
+              lastName: "Smith"
+              email: "jane.smith@example.com"
+              password: "Customer1234!"
+              phoneNumber: "+37367987654"
+              dateOfBirth: "1992-05-15"
+              address:
+                street: "Str. Bucuresti"
+                city: "Chisinau"
+                postalCode: "2012"
+                country: "Moldova"
+      responses:
+        '201':
+          description: Customer created successfully
+        '400':
+          description: Bad request, invalid input
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: "johndoe@example.com"
+        password: "StrongPassword123!"
+
+    Address:
+      type: object
+      required:
+        - street
+        - city
+        - postalCode
+        - country
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+      example:
+        street: "Str. Paris"
+        city: "Chisinau"
+        postalCode: "2001"
+        country: "Moldova"
+
+    CustomerSignupRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+        - phoneNumber
+        - dateOfBirth
+        - address
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        phoneNumber:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        address:
+          $ref: '#/components/schemas/Address'
+
+    EmployeeSignupRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+        - phoneNumber
+        - dateOfBirth
+        - role
+        - address
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        phoneNumber:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        role:
+          type: string
+          enum: [ ADMIN, MECHANIC, CAR_DETAILER, CAR_PAINTER, ELECTRICIAN ]
+        address:
+          $ref: '#/components/schemas/Address'
