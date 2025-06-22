@@ -3,12 +3,17 @@ info:
   title: Car Service API
   version: 1.0.0
   description: API for managing car services
+servers:
+  - url: http://localhost:8080/api
+    description: Dev server
+
 paths:
-  /api/auth/login:
+  /auth/login:
     post:
       tags:
         - Authentication
       summary: Login users
+      security: []
       requestBody:
         required: true
         content:
@@ -26,11 +31,12 @@ paths:
         '401':
           description: Invalid credentials
 
-  /api/auth/signup/employee:
+  /auth/signup/employee:
     post:
       tags:
         - Authentication
       summary: Register a new employee
+      security: []
       requestBody:
         required: true
         content:
@@ -44,7 +50,7 @@ paths:
               password: "Test1234!"
               phoneNumber: "+37367123456"
               dateOfBirth: "1990-01-01"
-              role: "ELECTRICIAN"
+              role: [ "ELECTRICIAN" ]
               address:
                 street: "Str. Paris"
                 city: "Chisinau"
@@ -53,14 +59,32 @@ paths:
       responses:
         '201':
           description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+              example:
+                firstName: "John"
+                lastName: "Doe"
+                email: "john.doe@example.com"
+                password: "Test1234!"
+                phoneNumber: "+37367123456"
+                dateOfBirth: "1990-01-01"
+                role: [ "ELECTRICIAN" ]
+                address:
+                  street: "Str. Paris"
+                  city: "Chisinau"
+                  postalCode: "2001"
+                  country: "Moldova"
         '400':
           description: Bad request, invalid input
 
-  /api/auth/signup/customer:
+  /auth/signup/customer:
     post:
       tags:
         - Authentication
       summary: Register a new customer
+      security: []
       requestBody:
         required: true
         content:
@@ -82,10 +106,47 @@ paths:
       responses:
         '201':
           description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
         '400':
           description: Bad request, invalid input
 
+  /profile/{id}:
+    get:
+      tags:
+        - Profile
+      summary: Get profile by user ID
+      operationId: getProfileById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the user
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '404':
+          description: User not found
+
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     LoginRequest:
       type: object
@@ -180,7 +241,124 @@ components:
           type: string
           format: date
         role:
-          type: string
-          enum: [ ADMIN, MECHANIC, CAR_DETAILER, CAR_PAINTER, ELECTRICIAN ]
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/UserRole'
         address:
           $ref: '#/components/schemas/Address'
+
+    UserRole:
+      type: string
+      enum:
+        - ADMIN
+        - MECHANIC
+        - CAR_DETAILER
+        - CAR_PAINTER
+        - ELECTRICIAN
+        - GUEST
+        - REGULAR
+        - LOYAL
+
+    Profile:
+      oneOf:
+        - $ref: '#/components/schemas/Customer'
+        - $ref: '#/components/schemas/Employee'
+      discriminator:
+        propertyName: profileType
+        mapping:
+          CUSTOMER: '#/components/schemas/Customer'
+          EMPLOYEE: '#/components/schemas/Employee'
+
+    Customer:
+      type: object
+      required:
+        - id
+        - profileType
+        - firstName
+        - lastName
+        - email
+        - password
+        - phoneNumber
+        - dateOfBirth
+        - address
+        - role
+        - vehicles
+        - serviceVisits
+        - visitCounter
+      properties:
+        id:
+          type: string
+          format: uuid
+        profileType:
+          type: string
+          enum: [ CUSTOMER ]
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phoneNumber:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        address:
+          $ref: '#/components/schemas/Address'
+        role:
+          type: array
+          items:
+            type: string
+        vehicles:
+          type: array
+          items:
+            type: object
+        serviceVisits:
+          type: array
+          items:
+            type: object
+        visitCounter:
+          type: integer
+
+    Employee:
+      type: object
+      required:
+        - id
+        - profileType
+        - firstName
+        - lastName
+        - email
+        - password
+        - phoneNumber
+        - dateOfBirth
+        - address
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+        profileType:
+          type: string
+          enum: [ EMPLOYEE ]
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phoneNumber:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        address:
+          $ref: '#/components/schemas/Address'
+        role:
+          type: array
+          items:
+            type: string

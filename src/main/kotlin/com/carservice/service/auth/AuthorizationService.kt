@@ -1,20 +1,21 @@
 package com.carservice.service.auth
 
-import com.carservice.dto.authorization.CustomerSignupRequest
-import com.carservice.dto.authorization.EmployeeSignupRequest
+import com.carservice.mapper.ProfileMapper
+import com.carservice.model.CustomerSignupRequest
+import com.carservice.model.EmployeeSignupRequest
 import com.carservice.model.profile.*
 import com.carservice.repository.ProfileRepository
 import com.carservice.validation.customerSignupValidator
 import com.carservice.validation.employeeSignUpValidator
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.*
 import java.util.UUID.randomUUID
 
 @Service
 class AuthorizationService(
     private val profileRepository: ProfileRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val profileMapper: ProfileMapper
 ) {
 
     fun signupCustomer(request: CustomerSignupRequest): Profile {
@@ -32,7 +33,7 @@ class AuthorizationService(
             password = passwordEncoder.encode(request.password),
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
-            address = request.address,
+            address = profileMapper.convertToDomainAddress(request.address),
             serviceVisits = emptyList()
         )
         return profileRepository.save(customer)
@@ -40,12 +41,13 @@ class AuthorizationService(
 
     fun signupEmployee(request: EmployeeSignupRequest): Profile {
         val result = employeeSignUpValidator.validate(request)
+        val role = request.role.map { UserRole.valueOf(it.name) }.toSet()
+
+        if (role.any { !(it.isEmployeeRole() || it.isAdmin()) }) {
+            throw IllegalArgumentException("Invalid role for employee")
+        }
         if (result.errors.isNotEmpty()) {
             throw IllegalArgumentException("Invalid employee signup request: ${result.errors.joinToString(", ")}")
-        }
-
-        if (request.role.any { !(it.isEmployeeRole() || it.isAdmin()) }) {
-            throw IllegalArgumentException("Invalid role for employee")
         }
 
         val employee = Employee(
@@ -56,8 +58,8 @@ class AuthorizationService(
             password = passwordEncoder.encode(request.password),
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
-            address = request.address,
-            role = request.role
+            address = profileMapper.convertToDomainAddress(request.address),
+            role = request.role.map { UserRole.valueOf(it.name) }.toSet()
         )
         return profileRepository.save(employee)
     }

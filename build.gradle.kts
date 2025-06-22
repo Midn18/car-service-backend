@@ -48,8 +48,8 @@ kotlin {
 
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    inputSpec.set("$rootDir/src/main/resources/openapi.yaml")
-    outputDir.set("$buildDir/generated-sources/openapi")
+    inputSpec.set("$rootDir/src/main/resources/service.yaml")
+    outputDir.set("$buildDir/generated-sources/service")
     apiPackage.set("com.carservice.api")
     modelPackage.set("com.carservice.model")
     configOptions.set(
@@ -64,7 +64,7 @@ openApiGenerate {
 sourceSets {
     main {
         java {
-            srcDir("$buildDir/generated-sources/openapi/src/main/kotlin")
+            srcDir("$buildDir/generated-sources/service/src/main/kotlin")
         }
     }
 }

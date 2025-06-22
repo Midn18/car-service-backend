@@ -1,5 +1,6 @@
 package com.carservice.model.profile
 
+import com.carservice.model.Address
 import io.konform.validation.ValidationBuilder
 import io.konform.validation.constraints.maxLength
 import io.konform.validation.constraints.minLength
@@ -53,4 +54,3 @@ val validateAddress: ValidationBuilder<Address>.() -> Unit = {
         maxLength(MAX_LENGTH) hint "Country must not exceed 30 characters"
     }
 }
-
