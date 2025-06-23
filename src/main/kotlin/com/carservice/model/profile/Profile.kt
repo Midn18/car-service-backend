@@ -27,7 +27,7 @@ enum class ProfileType(val profileClass: KClass<out Profile>) {
 )
 interface Profile {
     val profileType: ProfileType
-    val id: UUID
+    val id: String
     val firstName: String
     val lastName: String
     val email: String
@@ -41,7 +41,7 @@ interface Profile {
 @Document(collection = "profile")
 data class Customer(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: String = UUID.randomUUID().toString(),
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",
@@ -61,7 +61,7 @@ data class Customer(
 @Document(collection = "profile")
 data class Employee(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: String = UUID.randomUUID().toString(),
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",

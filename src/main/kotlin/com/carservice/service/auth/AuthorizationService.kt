@@ -25,7 +25,7 @@ class AuthorizationService(
         }
 
         val customer = Customer(
-            id = randomUUID(),
+            id = randomUUID().toString(),
             role = setOf(UserRole.GUEST),
             firstName = request.firstName,
             lastName = request.lastName,
@@ -51,7 +51,7 @@ class AuthorizationService(
         }
 
         val employee = Employee(
-            id = randomUUID(),
+            id = randomUUID().toString(),
             firstName = request.firstName,
             lastName = request.lastName,
             email = request.email,

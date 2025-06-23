@@ -22,7 +22,7 @@ class ProfileService(
             ?: throw NoSuchElementException("User with email $loggedInEmail not found")
 
         val isEmployee = requester.role.any { it.isEmployeeRole() || it.isAdmin() }
-        val isSelf = requester.id == userId
+        val isSelf = UUID.fromString(requester.id) == userId
 
         if (!isEmployee && !isSelf) {
             throw AccessDeniedException("You are not allowed to access this profile.")
