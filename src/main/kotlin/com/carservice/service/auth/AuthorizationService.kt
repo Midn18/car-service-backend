@@ -1,8 +1,7 @@
 package com.carservice.service.auth
 
-import com.carservice.mapper.ProfileMapper
-import com.carservice.model.CustomerSignupRequest
-import com.carservice.model.EmployeeSignupRequest
+import com.carservice.dto.authorization.CustomerSignupRequest
+import com.carservice.dto.authorization.EmployeeSignupRequest
 import com.carservice.model.profile.*
 import com.carservice.repository.ProfileRepository
 import com.carservice.validation.customerSignupValidator
@@ -15,7 +14,6 @@ import java.util.UUID.randomUUID
 class AuthorizationService(
     private val profileRepository: ProfileRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val profileMapper: ProfileMapper
 ) {
 
     fun signupCustomer(request: CustomerSignupRequest): Profile {
@@ -33,7 +31,7 @@ class AuthorizationService(
             password = passwordEncoder.encode(request.password),
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
-            address = profileMapper.convertToDomainAddress(request.address),
+            address = request.address,
             serviceVisits = emptyList()
         )
         return profileRepository.save(customer)
@@ -58,7 +56,7 @@ class AuthorizationService(
             password = passwordEncoder.encode(request.password),
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
-            address = profileMapper.convertToDomainAddress(request.address),
+            address = request.address,
             role = request.role.map { UserRole.valueOf(it.name) }.toSet()
         )
         return profileRepository.save(employee)

@@ -1,9 +1,9 @@
 package com.carservice.security
 
+import com.carservice.config.toJson
 import com.carservice.dto.authorization.LoginRequest
 import com.carservice.model.auth.UserSecurity
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -16,11 +16,12 @@ import java.util.*
 
 class JwtAuthenticationFilter(
     private val jwtTokenUtil: JwtTokenUtil,
-    private val authenticationManager: AuthenticationManager
+    private val authenticationManager: AuthenticationManager,
+    private val objectMapper: ObjectMapper,
 ) : UsernamePasswordAuthenticationFilter() {
 
     override fun attemptAuthentication(req: HttpServletRequest, response: HttpServletResponse): Authentication {
-        val credentials = jacksonObjectMapper().readValue(req.inputStream, LoginRequest::class.java)
+        val credentials = objectMapper.readValue(req.inputStream, LoginRequest::class.java)
         val authToken = UsernamePasswordAuthenticationToken(
             credentials.email,
             credentials.password,
@@ -49,7 +50,7 @@ class JwtAuthenticationFilter(
         val error = BadCredentialsError()
         response.status = error.status
         response.contentType = "application/json"
-        response.writer.append(error.toString())
+        response.writer.append(error.toJson())
     }
 }
 
@@ -57,8 +58,4 @@ private data class BadCredentialsError(
     val timestamp: Long = Date().time,
     val status: Int = 401,
     val message: String = "Email or password incorrect",
-) {
-    override fun toString(): String {
-        return ObjectMapper().writeValueAsString(this)
-    }
-}
+)

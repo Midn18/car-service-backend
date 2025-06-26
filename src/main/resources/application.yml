@@ -12,4 +12,10 @@ spring:
 jwt:
   key: 3mB%9V@fK!mP#G7zWrXj2LoqA8UdNcYbTfQwErTyUiOpAsDfGhJkLzXcVbNmQwErT
   access-token-expiration: 3600000
-  refresh-token-expiration: 86400000
+  refresh-token-expiration: 172800000
+
+logging:
+    level:
+        org.springframework.web: DEBUG
+        org.springframework.security: DEBUG
+        org.springframework.data.mongodb: DEBUG

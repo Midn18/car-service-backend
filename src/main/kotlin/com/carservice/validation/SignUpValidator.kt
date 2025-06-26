@@ -1,8 +1,8 @@
 package com.carservice.validation
 
 
-import com.carservice.model.CustomerSignupRequest
-import com.carservice.model.EmployeeSignupRequest
+import com.carservice.dto.authorization.CustomerSignupRequest
+import com.carservice.dto.authorization.EmployeeSignupRequest
 import com.carservice.model.profile.*
 import io.konform.validation.Validation
 

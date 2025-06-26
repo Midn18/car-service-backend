@@ -49,15 +49,15 @@ kotlin {
 
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    inputSpec.set("$rootDir/src/main/resources/service.yaml")
-    outputDir.set("$buildDir/generated-sources/service")
-    apiPackage.set("com.carservice.api")
-    modelPackage.set("com.carservice.model")
+    inputSpec.set("$rootDir/src/main/resources/static/service.yaml")
+    outputDir.set("$buildDir/generated")
+
     configOptions.set(
         mapOf(
             "interfaceOnly" to "true",
-            "useSpringBoot3" to "true",
-            "useBeanValidation" to "true"
+            "useTags" to "true",
+            "dateLibrary" to "java8",
+            "serializationLibrary" to "jackson"
         )
     )
 }

@@ -1,6 +1,5 @@
 package com.carservice.model.profile
 
-import com.carservice.model.Address
 import io.konform.validation.ValidationBuilder
 import io.konform.validation.constraints.maxLength
 import io.konform.validation.constraints.minLength

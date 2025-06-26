@@ -50,13 +50,11 @@ data class Customer(
     override val dateOfBirth: LocalDate,
     override val address: Address,
     override val role: Set<UserRole>,
+    override val profileType: ProfileType = ProfileType.CUSTOMER,
     val vehicles: List<Vehicle> = emptyList(),
     val serviceVisits: List<ServiceVisit> = emptyList(),
     val visitCounter: Int = 0,
-) : Profile {
-    override val profileType: ProfileType
-        get() = ProfileType.CUSTOMER
-}
+) : Profile
 
 @Document(collection = "profile")
 data class Employee(
@@ -70,10 +68,8 @@ data class Employee(
     override val dateOfBirth: LocalDate,
     override val address: Address,
     override val role: Set<UserRole>,
-) : Profile {
-    override val profileType: ProfileType
-        get() = ProfileType.EMPLOYEE
-}
+    override val profileType: ProfileType = ProfileType.EMPLOYEE,
+) : Profile
 
 data class Address(
     val street: String = "",
