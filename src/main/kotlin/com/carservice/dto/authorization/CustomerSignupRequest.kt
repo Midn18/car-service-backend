@@ -9,6 +9,6 @@ data class CustomerSignupRequest(
     override val email: String,
     override val password: String,
     override val phoneNumber: String,
-    val dateOfBirth: LocalDate,
+    override val dateOfBirth: LocalDate,
     override val address: Address
 ) : SignUpRequest

@@ -4,6 +4,7 @@ import com.carservice.security.JwtAuthenticationFilter
 import com.carservice.security.JwtAuthorizationFilter
 import com.carservice.security.JwtTokenUtil
 import com.carservice.service.auth.UserDetailsService
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -19,7 +20,8 @@ import org.springframework.security.web.SecurityFilterChain
 @EnableWebSecurity
 class SecurityConfig(
     private val userDetailsService: UserDetailsService,
-    jwtProperties: JwtProperties
+    jwtProperties: JwtProperties,
+    private val objectMapper: ObjectMapper
 ) {
     private val jwtTokenUtil: JwtTokenUtil = JwtTokenUtil(jwtProperties)
 
@@ -40,7 +42,7 @@ class SecurityConfig(
         http: HttpSecurity,
         authenticationManager: AuthenticationManager
     ): SecurityFilterChain {
-        val jwtAuthenticationFilter = JwtAuthenticationFilter(jwtTokenUtil, authenticationManager)
+        val jwtAuthenticationFilter = JwtAuthenticationFilter(jwtTokenUtil, authenticationManager, objectMapper)
         jwtAuthenticationFilter.setFilterProcessesUrl("/api/auth/login")
 
         val jwtAuthorizationFilter = JwtAuthorizationFilter(jwtTokenUtil, userDetailsService, authenticationManager)

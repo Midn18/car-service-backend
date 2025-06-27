@@ -16,7 +16,7 @@ class JwtAuthorizationFilter(
     authManager: AuthenticationManager
 ) : BasicAuthenticationFilter(authManager) {
 
-    fun doInternalFilter(
+    override fun doFilterInternal(
         req: HttpServletRequest,
         res: HttpServletResponse,
         chain: FilterChain

@@ -33,6 +33,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -48,15 +49,15 @@ kotlin {
 
 openApiGenerate {
     generatorName.set("kotlin-spring")
-    inputSpec.set("$rootDir/src/main/resources/openapi.yaml")
-    outputDir.set("$buildDir/generated-sources/openapi")
-    apiPackage.set("com.carservice.api")
-    modelPackage.set("com.carservice.model")
+    inputSpec.set("$rootDir/src/main/resources/static/service.yaml")
+    outputDir.set("$buildDir/generated")
+
     configOptions.set(
         mapOf(
             "interfaceOnly" to "true",
-            "useSpringBoot3" to "true",
-            "useBeanValidation" to "true"
+            "useTags" to "true",
+            "dateLibrary" to "java8",
+            "serializationLibrary" to "jackson"
         )
     )
 }
@@ -64,7 +65,7 @@ openApiGenerate {
 sourceSets {
     main {
         java {
-            srcDir("$buildDir/generated-sources/openapi/src/main/kotlin")
+            srcDir("$buildDir/generated-sources/service/src/main/kotlin")
         }
     }
 }

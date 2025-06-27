@@ -27,7 +27,7 @@ enum class ProfileType(val profileClass: KClass<out Profile>) {
 )
 interface Profile {
     val profileType: ProfileType
-    val id: UUID
+    val id: String
     val firstName: String
     val lastName: String
     val email: String
@@ -41,7 +41,7 @@ interface Profile {
 @Document(collection = "profile")
 data class Customer(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: String = UUID.randomUUID().toString(),
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",
@@ -50,18 +50,16 @@ data class Customer(
     override val dateOfBirth: LocalDate,
     override val address: Address,
     override val role: Set<UserRole>,
+    override val profileType: ProfileType = ProfileType.CUSTOMER,
     val vehicles: List<Vehicle> = emptyList(),
     val serviceVisits: List<ServiceVisit> = emptyList(),
     val visitCounter: Int = 0,
-) : Profile {
-    override val profileType: ProfileType
-        get() = ProfileType.CUSTOMER
-}
+) : Profile
 
 @Document(collection = "profile")
 data class Employee(
     @Id
-    override val id: UUID = UUID.randomUUID(),
+    override val id: String = UUID.randomUUID().toString(),
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",
@@ -70,10 +68,8 @@ data class Employee(
     override val dateOfBirth: LocalDate,
     override val address: Address,
     override val role: Set<UserRole>,
-) : Profile {
-    override val profileType: ProfileType
-        get() = ProfileType.EMPLOYEE
-}
+    override val profileType: ProfileType = ProfileType.EMPLOYEE,
+) : Profile
 
 data class Address(
     val street: String = "",

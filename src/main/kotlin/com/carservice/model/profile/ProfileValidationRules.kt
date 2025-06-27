@@ -53,4 +53,3 @@ val validateAddress: ValidationBuilder<Address>.() -> Unit = {
         maxLength(MAX_LENGTH) hint "Country must not exceed 30 characters"
     }
 }
-
