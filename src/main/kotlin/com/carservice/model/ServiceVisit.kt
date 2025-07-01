@@ -10,8 +10,8 @@ import java.util.UUID
 @Document
 data class ServiceVisit(
     @Id @Field("visit_id")
-    val visitId: UUID = UUID.randomUUID(),
-    val vehicleVin: String = "",
+    val visitId: String = UUID.randomUUID().toString(),
+    val vehicleDetails: Vehicle,
     val serviceDate: LocalDate,
     val serviceType: ServiceType,
     val employee: SkinnyProfile,

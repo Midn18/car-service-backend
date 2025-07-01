@@ -1,8 +1,8 @@
 package com.carservice.model
 
+import com.carservice.model.profile.SkinnyProfile
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.util.UUID
 
 @Document
 data class Vehicle(
@@ -15,7 +15,7 @@ data class Vehicle(
     val fuelType: FuelType,
     val color: String = "",
     val kilometers: Int,
-    val ownerId: UUID,
+    val owner: SkinnyProfile,
     val vehicleType: VehicleType,
     val serviceHistory: List<ServiceVisit>,
     val registrationNumber: String = "",

@@ -1,9 +1,7 @@
 package com.carservice.model.profile
 
-import java.util.UUID
-
 data class SkinnyProfile(
-    val id: UUID,
+    val id: String,
     val profileType: ProfileType,
     val firstName: String,
     val lastName: String,
