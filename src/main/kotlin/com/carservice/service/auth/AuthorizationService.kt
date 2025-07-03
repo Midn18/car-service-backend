@@ -32,7 +32,7 @@ class AuthorizationService(
             phoneNumber = request.phoneNumber,
             dateOfBirth = request.dateOfBirth,
             address = request.address,
-            serviceVisits = emptyList()
+            serviceVisitIds = emptyList()
         )
         return profileRepository.save(customer)
     }

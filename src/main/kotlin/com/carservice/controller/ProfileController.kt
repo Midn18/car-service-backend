@@ -29,7 +29,7 @@ class ProfileController(
 
     @GetMapping("/{id}")
     fun getProfileById(@PathVariable id: UUID): ResponseEntity<Any> {
-        val domainProfile = profileService.getProfileWithAccessCheck(id)
+        val domainProfile = profileService.getProfileById(id)
         val apiProfile = profileMapper.toApiProfile(domainProfile)
         return ResponseEntity.ok(apiProfile)
     }
@@ -54,8 +54,6 @@ class ProfileController(
         email: String?,
         @RequestParam(name = "phone_number", required = false)
         phoneNumber: String?,
-        @RequestParam(name = "car_number", required = false)
-        carNumber: String?,
         @RequestParam(name = "car_vin", required = false)
         @Size(min = 17, message = "VIN must be at least 17 characters")
         carVin: String?
@@ -67,7 +65,6 @@ class ProfileController(
             lastName = lastName,
             email = email,
             phoneNumber = phoneNumber,
-            carNumber = carNumber,
             carVin = carVin
         )
         return ResponseEntity.ok(customers)

@@ -20,8 +20,8 @@ class CustomerMapper : EntityMapper<CustomerProfileResponse, Customer> {
             dateOfBirth = entity.dateOfBirth,
             address = entity.address,
             role = entity.role,
-            vehicles = emptyList(),
-            serviceVisits = emptyList(),
+            vehiclesVin = entity.vehiclesVin,
+            serviceVisitIds = entity.serviceVisitIds,
             visitCounter = entity.visitCounter
         )
     }

@@ -1,7 +1,5 @@
 package com.carservice.dto.profile
 
-import com.carservice.model.ServiceVisit
-import com.carservice.model.Vehicle
 import com.carservice.model.profile.Address
 import com.carservice.model.profile.ProfileType
 import com.carservice.model.profile.UserRole
@@ -18,7 +16,7 @@ data class CustomerProfileResponse(
     override val address: Address,
     override val profileType: ProfileType,
     override val role: Set<UserRole>,
-    val vehicles: List<Vehicle>,
-    val serviceVisits: List<ServiceVisit>,
+    val vehiclesVin: List<String>,
+    val serviceVisitIds: List<String>,
     val visitCounter: Int
 ) : ProfileResponse

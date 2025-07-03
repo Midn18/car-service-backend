@@ -1,6 +1,5 @@
 package com.carservice.repository
 
-import com.carservice.model.profile.Address
 import com.carservice.model.profile.Customer
 import com.carservice.model.profile.Employee
 import com.carservice.model.profile.Profile
@@ -20,7 +19,6 @@ interface ProfileRepositoryExt {
         lastName: String?,
         email: String?,
         phoneNumber: String?,
-        carNumber: String?,
         carVin: String?
     ): Page<Customer>
 
@@ -36,10 +34,6 @@ interface ProfileRepositoryExt {
 
 interface ProfileRepository : MongoRepository<Profile, String>, ProfileRepositoryExt {
     fun findByEmail(email: String): Profile?
-    fun findByPhoneNumber(phoneNumber: String): Profile?
-    fun findByFirstName(firstName: String): List<Profile>
-    fun findByLastName(lastName: String): List<Profile>
-    fun findByAddress(address: Address): List<Profile>
 }
 
 @Repository
@@ -53,7 +47,6 @@ class ProfileRepositoryImpl(
         lastName: String?,
         email: String?,
         phoneNumber: String?,
-        carNumber: String?,
         carVin: String?
     ): Page<Customer> {
 
@@ -66,8 +59,7 @@ class ProfileRepositoryImpl(
         lastName?.let { criteriaList.add(Criteria.where("lastName").regex(it, "i")) }
         email?.let { criteriaList.add(Criteria.where("email").regex(it, "i")) }
         phoneNumber?.let { criteriaList.add(Criteria.where("phoneNumber").regex(it, "i")) }
-        carNumber?.let { criteriaList.add(Criteria.where("vehicles.registrationNumber").regex(it, "i")) }
-        carVin?.let { criteriaList.add(Criteria.where("vehicles.vin").regex(it, "i")) }
+        carVin?.let { criteriaList.add(Criteria.where("vehiclesVin").regex(it, "i")) }
 
         if (criteriaList.isNotEmpty()) {
             query.addCriteria(Criteria().andOperator(*criteriaList.toTypedArray()))

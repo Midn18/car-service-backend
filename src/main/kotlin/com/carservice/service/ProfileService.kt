@@ -15,10 +15,10 @@ import com.carservice.model.profile.isAdmin
 import com.carservice.model.profile.isEmployeeRole
 import java.time.LocalDate
 import com.carservice.repository.ProfileRepository
+import com.carservice.security.AuthorizationHelper
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -28,14 +28,14 @@ class ProfileService(
     private val profileRepository: ProfileRepository,
     private val customerMapper: CustomerMapper,
     private val employeeMapper: EmployeeMapper,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val authorizationHelper: AuthorizationHelper
 ) {
 
-    fun getProfileWithAccessCheck(userId: UUID): Profile {
-        val requester = getRequester()
-
-        val isSelf = requester.id == userId.toString()
-        if (!hasEmployeePrivileges(requester) && !isSelf) {
+    fun getProfileById(userId: UUID): Profile {
+        val requester = authorizationHelper.getRequester()
+        val isSelf = authorizationHelper.isSelf(requester, userId.toString())
+        if (!authorizationHelper.hasEmployeePrivileges(requester) && !isSelf) {
             throw AccessDeniedException("You are not allowed to access this profile.")
         }
 
@@ -50,10 +50,9 @@ class ProfileService(
         lastName: String? = null,
         email: String? = null,
         phoneNumber: String? = null,
-        carNumber: String? = null,
         carVin: String? = null
     ): List<CustomerProfileResponse> {
-        checkEmployeePrivileges()
+        authorizationHelper.checkEmployeePrivileges()
 
         val pageable = if (pageNumber != null && pageSize != null) {
             PageRequest.of(pageNumber - 1, pageSize)
@@ -62,7 +61,7 @@ class ProfileService(
         }
 
         val filteredCustomers = profileRepository.findAllCustomersByFilters(
-            pageable, firstName, lastName, email, phoneNumber, carNumber, carVin
+            pageable, firstName, lastName, email, phoneNumber, carVin
         )
 
         return filteredCustomers.content.map { customerMapper.mapEntity(it) }
@@ -77,7 +76,7 @@ class ProfileService(
         phoneNumber: String? = null,
         role: String? = null
     ): List<EmployeeProfileResponse> {
-        checkEmployeePrivileges()
+        authorizationHelper.checkEmployeePrivileges()
         val pageable = if (pageNumber != null && pageSize != null) {
             PageRequest.of(pageNumber - 1, pageSize)
         } else {
@@ -116,30 +115,11 @@ class ProfileService(
     }
 
     fun deleteProfile(id: UUID) {
-        checkEmployeePrivileges()
+        authorizationHelper.checkEmployeePrivileges()
 
         profileRepository.findById(id.toString())
             .orElseThrow { ProfileNotFoundException(id.toString()) }
         return profileRepository.deleteById(id.toString())
-    }
-
-    private fun getRequester(): Profile {
-        val auth = SecurityContextHolder.getContext().authentication
-        val loggedInEmail = auth.name
-
-        return profileRepository.findByEmail(loggedInEmail)
-            ?: throw NoSuchElementException("User with email $loggedInEmail not found")
-    }
-
-    private fun hasEmployeePrivileges(profile: Profile): Boolean {
-        return profile.role.any { it.isEmployeeRole() || it.isAdmin() }
-    }
-
-    private fun checkEmployeePrivileges() {
-        val requester = getRequester()
-        if (!hasEmployeePrivileges(requester)) {
-            throw AccessDeniedException("You are not allowed to access this resource.")
-        }
     }
 
     private fun copyCommonDetails(

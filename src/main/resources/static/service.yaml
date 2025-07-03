@@ -283,8 +283,8 @@ components:
         - dateOfBirth
         - address
         - role
-        - vehicles
-        - serviceVisits
+        - vehiclesVin
+        - serviceVisitIds
         - visitCounter
       properties:
         id:
@@ -312,11 +312,11 @@ components:
           type: array
           items:
             type: string
-        vehicles:
+        vehiclesVin:
           type: array
           items:
             type: object
-        serviceVisits:
+        serviceVisitIds:
           type: array
           items:
             type: object
