@@ -17,7 +17,7 @@ data class Vehicle(
     val kilometers: Int,
     val owner: SkinnyProfile,
     val vehicleType: VehicleType,
-    val serviceHistory: List<ServiceVisit>,
+    val serviceHistory: List<ServiceVisit> = emptyList(),
     val registrationNumber: String = "",
 )
 

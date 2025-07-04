@@ -1,7 +1,5 @@
 package com.carservice.model.profile
 
-import com.carservice.model.ServiceVisit
-import com.carservice.model.Vehicle
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import org.springframework.data.annotation.Id
@@ -51,8 +49,8 @@ data class Customer(
     override val address: Address,
     override val role: Set<UserRole>,
     override val profileType: ProfileType = ProfileType.CUSTOMER,
-    val vehicles: List<Vehicle> = emptyList(),
-    val serviceVisits: List<ServiceVisit> = emptyList(),
+    val vehiclesVin: List<String> = emptyList(),
+    val serviceVisitIds: List<String> = emptyList(),
     val visitCounter: Int = 0,
 ) : Profile
 
@@ -97,3 +95,15 @@ fun UserRole.isEmployeeRole() = this in listOf(
 )
 
 fun UserRole.isAdmin() = this == UserRole.ADMIN
+
+fun Profile.toSkinnyProfile(): SkinnyProfile {
+    return SkinnyProfile(
+        id = this.id,
+        profileType = this.profileType,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        email = this.email,
+        phoneNumber = this.phoneNumber,
+        role = this.role
+    )
+}
