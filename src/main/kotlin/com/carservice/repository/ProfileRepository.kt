@@ -34,6 +34,8 @@ interface ProfileRepositoryExt {
 
 interface ProfileRepository : MongoRepository<Profile, String>, ProfileRepositoryExt {
     fun findByEmail(email: String): Profile?
+    fun existsByEmail(email: String): Boolean
+    fun existsByPhoneNumber(phoneNumber: String): Boolean
 }
 
 @Repository

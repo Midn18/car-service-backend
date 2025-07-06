@@ -1,5 +1,6 @@
 package com.carservice.model.profile
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import org.springframework.data.annotation.Id
@@ -43,6 +44,7 @@ data class Customer(
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     override val password: String = "",
     override val phoneNumber: String = "",
     override val dateOfBirth: LocalDate,
@@ -61,6 +63,7 @@ data class Employee(
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     override val password: String = "",
     override val phoneNumber: String = "",
     override val dateOfBirth: LocalDate,

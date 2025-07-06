@@ -1,7 +1,7 @@
 package com.carservice.controller
 
-import com.carservice.dto.authorization.CustomerSignupRequest
-import com.carservice.dto.authorization.EmployeeSignupRequest
+import com.carservice.model.profile.Customer
+import com.carservice.model.profile.Employee
 import com.carservice.model.profile.Profile
 import com.carservice.service.auth.AuthorizationService
 import org.springframework.http.ResponseEntity
@@ -16,14 +16,14 @@ class AuthorizationController(
     private val authService: AuthorizationService
 ) {
     @PostMapping("/signup/customer")
-    fun signupCustomer(@RequestBody request: CustomerSignupRequest): ResponseEntity<Profile> {
-        val profile = authService.signupCustomer(request)
+    fun signupCustomer(@RequestBody request: Customer): ResponseEntity<Profile> {
+        val profile = authService.signup(request)
         return ResponseEntity.ok(profile)
     }
 
     @PostMapping("/signup/employee")
-    fun signupEmployee(@RequestBody request: EmployeeSignupRequest): ResponseEntity<Profile> {
-        val profile = authService.signupEmployee(request)
+    fun signupEmployee(@RequestBody request: Employee): ResponseEntity<Profile> {
+        val profile = authService.signup(request)
         return ResponseEntity.ok(profile)
     }
 }
