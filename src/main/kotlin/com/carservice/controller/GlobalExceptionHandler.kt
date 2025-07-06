@@ -1,4 +1,4 @@
-package com.carservice.config
+package com.carservice.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
