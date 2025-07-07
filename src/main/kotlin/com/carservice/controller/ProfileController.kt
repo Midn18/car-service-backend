@@ -1,9 +1,9 @@
 package com.carservice.controller
 
-import com.carservice.dto.profile.CustomerProfileResponse
-import com.carservice.dto.profile.EmployeeProfileResponse
 import com.carservice.dto.profile.ProfileUpdateDetailsRequest
 import com.carservice.mapper.profile.ProfileMapper
+import com.carservice.model.profile.Customer
+import com.carservice.model.profile.Employee
 import com.carservice.service.ProfileService
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -29,9 +29,8 @@ class ProfileController(
 
     @GetMapping("/{id}")
     fun getProfileById(@PathVariable id: UUID): ResponseEntity<Any> {
-        val domainProfile = profileService.getProfileById(id)
-        val apiProfile = profileMapper.toApiProfile(domainProfile)
-        return ResponseEntity.ok(apiProfile)
+        val profile = profileService.getProfileById(id)
+        return ResponseEntity.ok(profile)
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -57,7 +56,7 @@ class ProfileController(
         @RequestParam(name = "car_vin", required = false)
         @Size(min = 17, message = "VIN must be at least 17 characters")
         carVin: String?
-    ): ResponseEntity<List<CustomerProfileResponse>> {
+    ): ResponseEntity<List<Customer>> {
         val customers = profileService.getAllCustomers(
             pageNumber = pageNumber,
             pageSize = pageSize,
@@ -93,7 +92,7 @@ class ProfileController(
         @RequestParam(name = "role", required = false)
         @Size(min = 2, max = 20, message = "Role must be between 2 and 20 characters")
         role: String?
-    ): ResponseEntity<List<EmployeeProfileResponse>> {
+    ): ResponseEntity<List<Employee>> {
         val employees = profileService.getAllEmployees(
             pageNumber = pageNumber,
             pageSize = pageSize,
