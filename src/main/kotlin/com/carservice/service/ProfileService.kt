@@ -1,11 +1,7 @@
 package com.carservice.service
 
-import com.carservice.dto.profile.CustomerProfileResponse
-import com.carservice.dto.profile.EmployeeProfileResponse
 import com.carservice.dto.profile.ProfileUpdateDetailsRequest
 import com.carservice.exceptions.ProfileNotFoundException
-import com.carservice.mapper.profile.CustomerMapper
-import com.carservice.mapper.profile.EmployeeMapper
 import com.carservice.model.profile.Address
 import com.carservice.model.profile.Customer
 import com.carservice.model.profile.Employee
@@ -26,8 +22,6 @@ import java.util.*
 @Service
 class ProfileService(
     private val profileRepository: ProfileRepository,
-    private val customerMapper: CustomerMapper,
-    private val employeeMapper: EmployeeMapper,
     private val passwordEncoder: PasswordEncoder,
     private val authorizationHelper: AuthorizationHelper
 ) {
@@ -51,7 +45,7 @@ class ProfileService(
         email: String? = null,
         phoneNumber: String? = null,
         carVin: String? = null
-    ): List<CustomerProfileResponse> {
+    ): List<Customer> {
         authorizationHelper.checkEmployeePrivileges()
 
         val pageable = if (pageNumber != null && pageSize != null) {
@@ -64,7 +58,7 @@ class ProfileService(
             pageable, firstName, lastName, email, phoneNumber, carVin
         )
 
-        return filteredCustomers.content.map { customerMapper.mapEntity(it) }
+        return filteredCustomers.content
     }
 
     fun getAllEmployees(
@@ -75,7 +69,7 @@ class ProfileService(
         email: String? = null,
         phoneNumber: String? = null,
         role: String? = null
-    ): List<EmployeeProfileResponse> {
+    ): List<Employee> {
         authorizationHelper.checkEmployeePrivileges()
         val pageable = if (pageNumber != null && pageSize != null) {
             PageRequest.of(pageNumber - 1, pageSize)
@@ -85,7 +79,7 @@ class ProfileService(
         val filteredEmployees = profileRepository.findAllEmployeesByFilters(
             pageable, firstName, lastName, email, phoneNumber, role
         )
-        return filteredEmployees.content.map { employeeMapper.mapEntity(it) }
+        return filteredEmployees.content
     }
 
     fun updateProfile(userId: UUID, request: ProfileUpdateDetailsRequest): Profile {

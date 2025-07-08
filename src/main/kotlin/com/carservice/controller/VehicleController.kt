@@ -1,7 +1,6 @@
 package com.carservice.controller
 
-import com.carservice.dto.vehicle.VehicleCreateRequest
-import com.carservice.model.Vehicle
+import com.carservice.model.vehicle.Vehicle
 import com.carservice.service.VehicleService
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -59,8 +58,8 @@ class VehicleController(
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
-    fun addVehicleToProfile(@RequestBody newVehicleRequest: VehicleCreateRequest): ResponseEntity<String> {
-        val vehicle = vehicleService.addNewVehicle(newVehicleRequest)
+    fun addVehicleToProfile(@RequestBody vehicleRequest: Vehicle): ResponseEntity<String> {
+        val vehicle = vehicleService.addNewVehicle(vehicleRequest)
         return ResponseEntity.ok("Vehicle added successfully: ${vehicle.vin}, ${vehicle.make} ${vehicle.model}")
     }
 

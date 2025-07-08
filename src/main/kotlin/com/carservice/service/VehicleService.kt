@@ -1,8 +1,6 @@
 package com.carservice.service
 
-import com.carservice.dto.vehicle.VehicleCreateRequest
-import com.carservice.mapper.VehicleMapper
-import com.carservice.model.Vehicle
+import com.carservice.model.vehicle.Vehicle
 import com.carservice.model.profile.Customer
 import com.carservice.repository.ProfileRepository
 import com.carservice.repository.VehicleRepository
@@ -16,8 +14,7 @@ import org.springframework.stereotype.Service
 class VehicleService(
     private val vehicleRepository: VehicleRepository,
     private val profileRepository: ProfileRepository,
-    private val authorizationHelper: AuthorizationHelper,
-    private val vehicleMapper: VehicleMapper
+    private val authorizationHelper: AuthorizationHelper
 ) {
 
     fun getAllVehicles(
@@ -44,33 +41,34 @@ class VehicleService(
         return filteredVehicles.content
     }
 
-    fun addNewVehicle(vehicleDto: VehicleCreateRequest): Vehicle {
+    fun addNewVehicle(vehicle: Vehicle): Vehicle {
         val requester = authorizationHelper.getRequester()
 
-        if (!authorizationHelper.hasEmployeePrivileges(requester) && vehicleDto.owner.id != requester.id) {
+        if (!authorizationHelper.hasEmployeePrivileges(requester) && vehicle.owner.id != requester.id) {
             throw AccessDeniedException("You are not allowed to add vehicles to this profile.")
         }
 
-        val ownerProfile = profileRepository.findById(vehicleDto.owner.id)
-            .orElseThrow { NoSuchElementException("Owner with ID ${vehicleDto.owner.id} not found") }
+        val ownerProfile = profileRepository.findById(vehicle.owner.id)
+            .orElseThrow { NoSuchElementException("Owner with ID ${vehicle.owner.id} not found") }
 
         if (ownerProfile !is Customer) {
             throw IllegalArgumentException("Only Customer profiles can have vehicles.")
         }
 
-        if (vehicleRepository.existsById(vehicleDto.vin)) {
-            throw IllegalArgumentException("A vehicle with VIN '${vehicleDto.vin}' already exists.")
+        if (vehicleRepository.existsById(vehicle.vin)) {
+            throw IllegalArgumentException("A vehicle with VIN '${vehicle.vin}' already exists.")
         }
 
-        if (vehicleDto.registrationNumber.isNotBlank()) {
-            val existingWithRegNumber = vehicleRepository.findByRegistrationNumber(vehicleDto.registrationNumber)
+        if (vehicle.registrationNumber.isNotBlank()) {
+            val existingWithRegNumber = vehicleRepository.findByRegistrationNumber(vehicle.registrationNumber)
             if (existingWithRegNumber != null) {
-                throw IllegalArgumentException("A vehicle with registration number '${vehicleDto.registrationNumber}' already exists.")
+                throw IllegalArgumentException("A vehicle with registration number '${vehicle.registrationNumber}' already exists.")
             }
         }
 
-        val vehicle = vehicleMapper.mapDtoWithOwner(vehicleDto, ownerProfile)
-        val savedVehicle = vehicleRepository.save(vehicle)
+        val vehicleToSave = vehicle.copy(serviceHistory = emptyList())
+
+        val savedVehicle = vehicleRepository.save(vehicleToSave)
 
         val updatedCustomer = ownerProfile.copy(
             vehiclesVin = ownerProfile.vehiclesVin + savedVehicle.vin

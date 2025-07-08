@@ -1,6 +1,6 @@
 package com.carservice.repository
 
-import com.carservice.model.Vehicle
+import com.carservice.model.vehicle.Vehicle
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.mongodb.core.MongoTemplate
