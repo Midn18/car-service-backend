@@ -1,5 +1,6 @@
 package com.carservice.controller
 
+import com.carservice.dto.vehicle.VehicleUpdateRequest
 import com.carservice.model.vehicle.Vehicle
 import com.carservice.service.VehicleService
 import jakarta.validation.constraints.Max
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -61,6 +63,16 @@ class VehicleController(
     fun addVehicleToProfile(@RequestBody vehicleRequest: Vehicle): ResponseEntity<String> {
         val vehicle = vehicleService.addNewVehicle(vehicleRequest)
         return ResponseEntity.ok("Vehicle added successfully: ${vehicle.vin}, ${vehicle.make} ${vehicle.model}")
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/{vin}")
+    fun updateVehicle(
+        @PathVariable vin: String,
+        @RequestBody vehicleRequest: VehicleUpdateRequest
+    ): ResponseEntity<String> {
+        val updatedVehicle = vehicleService.updateVehicle(vin, vehicleRequest)
+        return ResponseEntity.ok("Vehicle updated successfully: ${updatedVehicle.vin}, ${updatedVehicle.make} ${updatedVehicle.model}")
     }
 
     @PreAuthorize("isAuthenticated()")
