@@ -1,7 +1,6 @@
 package com.carservice.controller
 
 import com.carservice.dto.profile.ProfileUpdateDetailsRequest
-import com.carservice.mapper.profile.ProfileMapper
 import com.carservice.model.profile.Customer
 import com.carservice.model.profile.Employee
 import com.carservice.service.ProfileService
@@ -24,7 +23,6 @@ import java.util.UUID
 @RequestMapping("/api/profile")
 class ProfileController(
     private val profileService: ProfileService,
-    private val profileMapper: ProfileMapper
 ) {
 
     @GetMapping("/{id}")
@@ -119,7 +117,6 @@ class ProfileController(
         @RequestBody profileUpdateRequest: ProfileUpdateDetailsRequest
     ): ResponseEntity<Any> {
         val updatedProfile = profileService.updateProfile(id, profileUpdateRequest)
-        val apiProfile = profileMapper.toApiProfile(updatedProfile)
-        return ResponseEntity.ok(apiProfile)
+        return ResponseEntity.ok(updatedProfile)
     }
 }
