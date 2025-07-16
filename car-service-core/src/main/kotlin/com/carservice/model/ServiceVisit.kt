@@ -1,6 +1,7 @@
 package com.carservice.model
 
 import com.carservice.model.profile.SkinnyProfile
+import com.carservice.model.vehicle.SkinnyVehicle
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
@@ -9,10 +10,12 @@ import java.util.UUID
 
 @Document
 data class ServiceVisit(
-    @Id @Field("visit_id")
+    @Id @Field("id")
     val visitId: String = UUID.randomUUID().toString(),
-    val vehicleDetails: Vehicle,
-    val serviceDate: LocalDate,
+    val vehicleDetails: SkinnyVehicle,
+    val appointmentDate: LocalDate,
+    val appointmentDuration: Long,
+    val status: Status,
     val serviceType: ServiceType,
     val employee: SkinnyProfile,
     val customer: SkinnyProfile,
@@ -35,4 +38,11 @@ enum class ServiceType {
     BODYWORK_REPAIR,
     ELECTRICAL_DIAGNOSTICS,
     DETAILING;
+}
+
+enum class Status {
+    SCHEDULED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED,
 }
