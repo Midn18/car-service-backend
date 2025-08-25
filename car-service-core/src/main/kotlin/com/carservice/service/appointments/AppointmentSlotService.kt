@@ -18,8 +18,8 @@ class AppointmentSlotService(
     private val workingHoursRepository: WorkingHoursRepository
 ) {
 
-    fun generateAllSlots() {
-        val workingHoursList = workingHoursRepository.findAll()
+    fun generateSlotsForNewWorkingHours(since: LocalDateTime) {
+        val workingHoursList = workingHoursRepository.findByCreatedAtAfter(since)
 
         for (wh in workingHoursList) {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -33,15 +33,21 @@ class AppointmentSlotService(
             val startOfDay = workingDate.atStartOfDay()
             val endOfDay = workingDate.atTime(LocalTime.MAX)
 
-            if (appointmentSlotRepository.existsByStartTimeBetween(startOfDay, endOfDay)) {
-                println("Slots already exist for ${wh.date}, skipping...")
+            val slotsExist = appointmentSlotRepository.existsByEmployeeIdAndStartTimeBetween(
+                wh.employeeId!!,
+                startOfDay,
+                endOfDay
+            )
+
+            if (slotsExist) {
+                println("Slots already exist for ${wh.date} and employee ${wh.employeeId}, skipping...")
                 continue
             }
 
             val slots = generateSlotsForWorkingHours(wh)
             if (slots.isNotEmpty()) {
                 appointmentSlotRepository.saveAll(slots)
-                println("Generated ${slots.size} slots for working hours on ${wh.date}")
+                println("Generated ${slots.size} slots for working hours on ${wh.date} for employee ${wh.employeeId}")
             }
         }
     }
@@ -59,7 +65,8 @@ class AppointmentSlotService(
                 AppointmentSlot(
                     startTime = current,
                     endTime = current.plusMinutes(15),
-                    isAvailable = true
+                    isAvailable = true,
+                    employeeId = workingHours.employeeId ?: "unassigned"
                 )
             )
             current = current.plusMinutes(15)
@@ -73,8 +80,9 @@ class AppointmentSlotService(
 class SlotScheduler(private val slotService: AppointmentSlotService) {
 
     @Scheduled(cron = "\${scheduler.cron.appointment-slot-generator}")
-    fun generateSlotsForAllWorkingHours() {
-        println("Scheduled job started: Generating appointment slots...")
-        slotService.generateAllSlots()
+    fun generateSlotsForRecentWorkingHours() {
+        val since = LocalDateTime.now().minusHours(24)
+        println("Scheduled job started: Generating appointment slots for working hours created since $since ...")
+        slotService.generateSlotsForNewWorkingHours(since)
     }
 }
