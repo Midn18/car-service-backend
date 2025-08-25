@@ -19,3 +19,7 @@ logging:
         org.springframework.web: DEBUG
         org.springframework.security: DEBUG
         org.springframework.data.mongodb: DEBUG
+
+scheduler:
+  cron:
+    appointment-slot-generator: "0 0 0 * * *"
