@@ -1,6 +1,6 @@
-package com.carservice.service
+package com.carservice.service.appointments
 
-import com.carservice.model.WorkingHours
+import com.carservice.model.appointment.WorkingHours
 import com.carservice.repository.WorkingHoursRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate

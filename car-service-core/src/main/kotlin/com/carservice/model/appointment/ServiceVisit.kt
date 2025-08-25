@@ -1,4 +1,4 @@
-package com.carservice.model
+package com.carservice.model.appointment
 
 import com.carservice.model.profile.SkinnyProfile
 import com.carservice.model.vehicle.SkinnyVehicle
@@ -6,15 +6,18 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
-@Document
+@Document("service_visits")
 data class ServiceVisit(
     @Id @Field("id")
     val visitId: String = UUID.randomUUID().toString(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
     val vehicleDetails: SkinnyVehicle,
     val appointmentDate: LocalDate,
-    val appointmentDuration: Long,
+    val appointmentStartAt: String,
+    val appointmentEndAt: String,
     val status: Status,
     val serviceType: ServiceType,
     val employee: SkinnyProfile,

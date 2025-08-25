@@ -1,4 +1,4 @@
-package com.carservice.model
+package com.carservice.model.appointment
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id

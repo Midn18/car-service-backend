@@ -1,6 +1,6 @@
 package com.carservice.model.vehicle
 
-import com.carservice.model.ServiceVisit
+import com.carservice.model.appointment.ServiceVisit
 import com.carservice.model.profile.SkinnyProfile
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
