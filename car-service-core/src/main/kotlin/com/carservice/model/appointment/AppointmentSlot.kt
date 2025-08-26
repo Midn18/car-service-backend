@@ -9,6 +9,7 @@ import java.util.UUID
 data class AppointmentSlot(
     @Id
     val id: String = UUID.randomUUID().toString(),
+    val employeeId: String,
     val startTime: LocalDateTime,
     val endTime: LocalDateTime,
     val isAvailable: Boolean = true

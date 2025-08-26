@@ -8,4 +8,10 @@ import java.time.LocalDateTime
 @Repository
 interface AppointmentSlotRepository : MongoRepository<AppointmentSlot, String> {
     fun existsByStartTimeBetween(startTime: LocalDateTime, endTime: LocalDateTime): Boolean
+    fun existsByEmployeeIdAndStartTimeBetween(
+        employeeId: String,
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
+    ): Boolean
+    fun findAllByEmployeeId(employeeId: String): List<AppointmentSlot>
 }

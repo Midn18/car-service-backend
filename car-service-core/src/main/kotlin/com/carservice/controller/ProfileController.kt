@@ -25,13 +25,14 @@ class ProfileController(
     private val profileService: ProfileService,
 ) {
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     fun getProfileById(@PathVariable id: UUID): ResponseEntity<Any> {
         val profile = profileService.getProfileById(id)
         return ResponseEntity.ok(profile)
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@security.isEmployee(authentication)")
     @GetMapping("/customers")
     fun getCustomers(
         @RequestParam(name = "page_number", required = false)
@@ -67,7 +68,7 @@ class ProfileController(
         return ResponseEntity.ok(customers)
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@security.isEmployee(authentication)")
     @GetMapping("/employees")
     fun getEmployees(
         @RequestParam(name = "page_number", required = false)
@@ -103,14 +104,14 @@ class ProfileController(
         return ResponseEntity.ok(employees)
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     fun deleteProfile(@PathVariable id: UUID): ResponseEntity<String> {
         profileService.deleteProfile(id)
         return ResponseEntity.ok("Profile with ID $id has been deleted successfully.")
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
     fun updateProfile(
         @PathVariable id: UUID,

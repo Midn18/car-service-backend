@@ -1,7 +1,12 @@
 package com.carservice.controller
 
+import org.slf4j.LoggerFactory
+import org.springframework.dao.IncorrectResultSizeDataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -47,6 +52,36 @@ class GlobalExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleGeneralException(ex: Exception): ResponseEntity<Any> {
         ex.printStackTrace()
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mapOf("error" to "Unexpected error occurred"))
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(mapOf("error" to "Unexpected error occurred"))
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentials(ex: BadCredentialsException): ResponseEntity<Any> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to ex.message))
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException::class)
+    fun handleAuthorizationDenied(ex: AuthorizationDeniedException): ResponseEntity<Any> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(mapOf("error" to ex.message))
+    }
+
+    @ExceptionHandler(IncorrectResultSizeDataAccessException::class)
+    fun handleIncorrectResultSize(ex: IncorrectResultSizeDataAccessException): ResponseEntity<Any> {
+        val message = "Data inconsistency: Multiple records found for a unique query"
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mapOf("error" to message))
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleJsonParseError(ex: HttpMessageNotReadableException): ResponseEntity<Any> {
+        val logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
+        logger.warn("JSON parse error: ${ex.message}")
+        val message = when {
+            ex.message?.contains("Cannot deserialize value of type `java.util.ArrayList") == true ->
+                "Invalid JSON format: Expected an array of objects, but received a single object or invalid data"
+
+            else -> "Invalid JSON format: ${ex.message}"
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mapOf("error" to message))
     }
 }
