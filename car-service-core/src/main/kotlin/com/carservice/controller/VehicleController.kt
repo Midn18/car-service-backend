@@ -24,7 +24,7 @@ class VehicleController(
     private val vehicleService: VehicleService
 ) {
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@security.isEmployee(authentication)")
     @GetMapping("/")
     fun getVehicles(
         @RequestParam(name = "page_number", required = false)
@@ -58,14 +58,14 @@ class VehicleController(
         return ResponseEntity.ok(vehicles)
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@security.isEmployee(authentication)")
     @PostMapping("/add")
     fun addVehicleToProfile(@RequestBody vehicleRequest: Vehicle): ResponseEntity<String> {
         val vehicle = vehicleService.addNewVehicle(vehicleRequest)
         return ResponseEntity.ok("Vehicle added successfully: ${vehicle.vin}, ${vehicle.make} ${vehicle.model}")
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@security.isEmployee(authentication)")
     @PutMapping("/{vin}")
     fun updateVehicle(
         @PathVariable vin: String,
@@ -75,7 +75,7 @@ class VehicleController(
         return ResponseEntity.ok("Vehicle updated successfully: ${updatedVehicle.vin}, ${updatedVehicle.make} ${updatedVehicle.model}")
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@security.isEmployee(authentication)")
     @DeleteMapping("/{vin}")
     fun deleteVehicle(@PathVariable vin: String): ResponseEntity<String> {
         vehicleService.deleteVehicle(vin)

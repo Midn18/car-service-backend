@@ -1,7 +1,7 @@
 package com.carservice.service.appointments
 
 import com.carservice.model.appointment.AppointmentSlot
-import com.carservice.model.appointment.WorkingHours
+import com.carservice.model.appointment.WorkingSchedule
 import com.carservice.repository.AppointmentSlotRepository
 import com.carservice.repository.WorkingHoursRepository
 import org.springframework.scheduling.annotation.Scheduled
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 @Service
 class AppointmentSlotService(
@@ -22,42 +21,42 @@ class AppointmentSlotService(
         val workingHoursList = workingHoursRepository.findByCreatedAtAfter(since)
 
         for (wh in workingHoursList) {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val workingDate = LocalDate.parse(wh.date, formatter)
+            for (schedule in wh.workingSchedule) {
+                val workingDate = schedule.date
 
-            if (workingDate.isBefore(LocalDate.now())) {
-                println("Skipping ${wh.date} - past date")
-                continue
-            }
+                if (workingDate.isBefore(LocalDate.now())) {
+                    println("Skipping ${workingDate} - past date for employee ${wh.employeeId}")
+                    continue
+                }
 
-            val startOfDay = workingDate.atStartOfDay()
-            val endOfDay = workingDate.atTime(LocalTime.MAX)
+                val startOfDay = workingDate.atStartOfDay()
+                val endOfDay = workingDate.atTime(LocalTime.MAX)
 
-            val slotsExist = appointmentSlotRepository.existsByEmployeeIdAndStartTimeBetween(
-                wh.employeeId!!,
-                startOfDay,
-                endOfDay
-            )
+                val slotsExist = appointmentSlotRepository.existsByEmployeeIdAndStartTimeBetween(
+                    wh.employeeId,
+                    startOfDay,
+                    endOfDay
+                )
 
-            if (slotsExist) {
-                println("Slots already exist for ${wh.date} and employee ${wh.employeeId}, skipping...")
-                continue
-            }
+                if (slotsExist) {
+                    println("Slots already exist for ${workingDate} and employee ${wh.employeeId}, skipping...")
+                    continue
+                }
 
-            val slots = generateSlotsForWorkingHours(wh)
-            if (slots.isNotEmpty()) {
-                appointmentSlotRepository.saveAll(slots)
-                println("Generated ${slots.size} slots for working hours on ${wh.date} for employee ${wh.employeeId}")
+                val slots = generateSlotsForWorkingHours(wh.employeeId, schedule)
+                if (slots.isNotEmpty()) {
+                    appointmentSlotRepository.saveAll(slots)
+                    println("Generated ${slots.size} slots for working hours on ${workingDate} for employee ${wh.employeeId}")
+                }
             }
         }
     }
 
-    private fun generateSlotsForWorkingHours(workingHours: WorkingHours): List<AppointmentSlot> {
+    private fun generateSlotsForWorkingHours(employeeId: String, schedule: WorkingSchedule): List<AppointmentSlot> {
         val slots = mutableListOf<AppointmentSlot>()
 
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        val start = LocalDateTime.parse("${workingHours.date} ${workingHours.startAt}", formatter)
-        val end = LocalDateTime.parse("${workingHours.date} ${workingHours.endAt}", formatter)
+        val start = schedule.date.atTime(schedule.startAt)
+        val end = schedule.date.atTime(schedule.endAt)
 
         var current = start
         while (current.plusMinutes(15) <= end) {
@@ -66,7 +65,7 @@ class AppointmentSlotService(
                     startTime = current,
                     endTime = current.plusMinutes(15),
                     isAvailable = true,
-                    employeeId = workingHours.employeeId ?: "unassigned"
+                    employeeId = employeeId
                 )
             )
             current = current.plusMinutes(15)
