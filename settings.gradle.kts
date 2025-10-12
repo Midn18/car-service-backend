@@ -1,3 +1,3 @@
 rootProject.name = "car-service"
 
-include("car-service-core", "appointments-grpc")
+include("customer-service", "employee-service")
