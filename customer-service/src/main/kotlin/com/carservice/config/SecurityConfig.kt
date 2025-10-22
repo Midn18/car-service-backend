@@ -1,6 +1,7 @@
 package com.carservice.config
 
 import com.carservice.service.auth.JwtUserDetailsMapper
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -19,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain
 class SecurityConfig(
     private val jwtUserDetailsMapper: JwtUserDetailsMapper
 ) {
+
+    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    private lateinit var issuerUri: String
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -46,7 +50,6 @@ class SecurityConfig(
 
     @Bean
     fun jwtDecoder(): JwtDecoder {
-        val issuerUri = "http://localhost:8080/realms/car-service-realm" // Pune în @Value dacă vrei din config
         return NimbusJwtDecoder.withJwkSetUri("$issuerUri/protocol/openid-connect/certs").build()
     }
 

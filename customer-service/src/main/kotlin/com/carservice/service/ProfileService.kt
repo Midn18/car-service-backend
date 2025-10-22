@@ -1,5 +1,6 @@
 package com.carservice.service
 
+import com.carservice.config.LoggerUtil
 import com.carservice.dto.profile.ProfileUpdateDetailsRequest
 import com.carservice.exceptions.ProfileNotFoundException
 import com.carservice.model.profile.Address
@@ -12,7 +13,7 @@ import com.carservice.model.profile.isEmployeeRole
 import java.time.LocalDate
 import com.carservice.repository.ProfileRepository
 import com.carservice.security.AuthorizationHelper
-import com.carservice.service.auth.KeycloakUserService
+import com.carservice.security.KeycloakUserService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.AccessDeniedException
@@ -23,8 +24,9 @@ import java.util.*
 class ProfileService(
     private val profileRepository: ProfileRepository,
     private val authorizationHelper: AuthorizationHelper,
-    private val keycloakUserService: KeycloakUserService // Injectează KeycloakUserService pentru a actualiza parola
+    private val keycloakUserService: KeycloakUserService
 ) {
+    private val logger = LoggerUtil.getLogger<ProfileService>()
 
     fun getProfileById(userId: UUID): Profile {
         val requester = authorizationHelper.getRequester()
@@ -117,15 +119,23 @@ class ProfileService(
     }
 
     fun updatePassword(userId: UUID, newPassword: String) {
-        val existingProfile = profileRepository.findById(userId.toString())
+        logger.debug("Attempting to update password for user ID: {}", userId)
+        profileRepository.findById(userId.toString())
             .orElseThrow { NoSuchElementException("Profile with ID $userId not found") }
         val requester = authorizationHelper.getRequester()
         val isSelf = authorizationHelper.isSelf(requester, userId.toString())
         if (!isSelf && !authorizationHelper.hasEmployeePrivileges(requester)) {
+            logger.warn("Access denied for user ${requester.id} trying to update password for $userId")
             throw AccessDeniedException("You are not allowed to update this user's password.")
         }
 
-        keycloakUserService.createUser(existingProfile, newPassword)
+        try {
+            keycloakUserService.updateUserPassword(userId.toString(), newPassword)
+            logger.info("Password updated successfully for user ID: $userId")
+        } catch (e: Exception) {
+            logger.error("Failed to update password for user ID $userId: ${e.message}", e)
+            throw RuntimeException("Failed to update password in Keycloak: ${e.message}", e)
+        }
     }
 
     private fun copyCommonDetails(

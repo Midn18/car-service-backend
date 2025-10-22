@@ -125,6 +125,6 @@ class ProfileController(
     @PostMapping("/{id}/update-password")
     fun updatePassword(@PathVariable id: UUID, @RequestBody newPassword: String): ResponseEntity<Any> {
         profileService.updatePassword(id, newPassword)
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok("Password updated successfully.")
     }
 }
