@@ -5,19 +5,22 @@ plugins {
     id("io.spring.dependency-management")
 }
 
-group = "com"
 version = "0.0.1-SNAPSHOT"
 
-repositories {
-    mavenCentral()
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
+    implementation(project(":common-api"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.kafka:spring-kafka")
 
     runtimeOnly("org.postgresql:postgresql:42.7.3")
+
+    implementation("jakarta.validation:jakarta.validation-api")
+    implementation("org.hibernate.validator:hibernate-validator")
 
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -25,7 +28,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
 }

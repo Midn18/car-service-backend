@@ -7,39 +7,25 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
+    implementation(project(":common-api"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
-
     implementation("org.keycloak:keycloak-admin-client:26.0.6")
-
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.3")
-
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
-
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("io.konform:konform:0.11.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
     implementation("me.paulschwarz:spring-dotenv:3.0.0")
 
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
 }
 
 openApiGenerate {

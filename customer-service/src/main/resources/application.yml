@@ -13,11 +13,18 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/car-service-realm}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8080/realms/car-service-realm/protocol/openid-connect/certs}
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "com.carservice.event"
 
 keycloak:
   realm: ${KEYCLOAK_REALM}
   server-url: ${KEYCLOAK_AUTH_SERVER_URL:http://localhost:8080/}
-  admin-realm: master
+  admin-realm: car-service-realm
   client-id: admin-cli
   username: ${KEYCLOAK_ADMIN_USERNAME}
   password: ${KEYCLOAK_ADMIN_PASSWORD}

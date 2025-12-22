@@ -18,7 +18,7 @@ class JacksonConfig {
 object StaticJackson {
     val STATIC_OBJECT_MAPPER = ObjectMapper().apply {
         registerModule(JavaTimeModule())
-        registerModule(KotlinModule())
+        registerModule(KotlinModule.Builder().build())
     }
 }
 

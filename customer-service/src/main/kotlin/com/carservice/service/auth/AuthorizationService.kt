@@ -1,5 +1,6 @@
 package com.carservice.service.auth
 
+import com.carservice.event.EmployeeCreatedEvent
 import com.carservice.model.profile.Customer
 import com.carservice.model.profile.Employee
 import com.carservice.model.profile.Profile
@@ -8,14 +9,19 @@ import com.carservice.model.profile.isAdmin
 import com.carservice.model.profile.isEmployeeRole
 import com.carservice.repository.ProfileRepository
 import com.carservice.security.KeycloakUserService
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.kafka.core.KafkaTemplate
 
 @Service
 class AuthorizationService(
     private val profileRepository: ProfileRepository,
-    private val keycloakUserService: KeycloakUserService
+    private val keycloakUserService: KeycloakUserService,
+    private val kafkaTemplate: KafkaTemplate<String, Any>
 ) {
+
+    private val logger = LoggerFactory.getLogger(AuthorizationService::class.java)
 
     @Transactional
     fun signup(profile: Profile): Profile {
@@ -60,9 +66,28 @@ class AuthorizationService(
             address = employee.address,
             roles = employee.role
         )
-        return profileRepository.findById(userId).orElseThrow {
+        val savedEmployee = profileRepository.findById(userId).orElseThrow {
             IllegalStateException("Failed to retrieve created employee with ID: $userId")
         } as Employee
+
+        val event = EmployeeCreatedEvent(
+            employeeId = userId,
+            email = savedEmployee.email,
+            firstName = savedEmployee.firstName,
+            lastName = savedEmployee.lastName,
+            roles = savedEmployee.role.map { it.name }.toSet()
+        )
+
+        kafkaTemplate.send("employee.created", userId, event)
+            .whenComplete { result, ex ->
+                if (ex == null) {
+                    logger.info("EmployeeCreatedEvent sent successfully: $userId")
+                } else {
+                    logger.error("Failed to send EmployeeCreatedEvent for employee $userId: ${ex.message}", ex)
+                }
+            }
+
+        return savedEmployee
     }
 
     private fun validateUniqueFields(email: String, phoneNumber: String) {
