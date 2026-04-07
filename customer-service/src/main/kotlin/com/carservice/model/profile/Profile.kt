@@ -27,6 +27,7 @@ enum class ProfileType(val profileClass: KClass<out Profile>) {
 interface Profile {
     val profileType: ProfileType
     val id: String
+    val auth0Id: String
     val firstName: String
     val lastName: String
     val email: String
@@ -41,6 +42,8 @@ interface Profile {
 data class Customer(
     @Id
     override val id: String = UUID.randomUUID().toString(),
+    @org.springframework.data.mongodb.core.mapping.Field("auth0Id")
+    override val auth0Id: String = "",
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",
@@ -60,6 +63,8 @@ data class Customer(
 data class Employee(
     @Id
     override val id: String = UUID.randomUUID().toString(),
+    @org.springframework.data.mongodb.core.mapping.Field("auth0Id")
+    override val auth0Id: String = "",
     override val firstName: String = "",
     override val lastName: String = "",
     override val email: String = "",

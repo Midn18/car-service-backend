@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.EnableMongoAuditing
 import org.springframework.http.client.BufferingClientHttpRequestFactory
 import org.springframework.http.client.SimpleClientHttpRequestFactory
+import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 
 @Configuration
@@ -18,4 +19,9 @@ class AppConfig {
         )
         return restTemplate
     }
+
+    @Bean
+    fun restClient(): RestClient = RestClient.builder()
+        .defaultHeader("Content-Type", "application/json")
+        .build()
 }

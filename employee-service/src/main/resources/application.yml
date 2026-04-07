@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/car_service_db
-    username: postgres
+    username: mihail.danilenco
     password: admin
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -14,21 +14,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  kafka:
-#    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: employee-service-group
-      auto-offset-reset: earliest
-      properties:
-        spring.json.trusted.packages: "com.carservice.event"
-        spring.json.value.type.mapping: employeeCreated:com.carservice.event.EmployeeCreatedEvent
-        spring.json.value.type.headers.enabled: true
-        reconnect.backoff.ms: 1000
-        reconnect.backoff.max.ms: 10000
-        request.timeout.ms: 60000
-        session.timeout.ms: 45000
-        heartbeat.interval.ms: 3000
+
 
 logging:
   level:

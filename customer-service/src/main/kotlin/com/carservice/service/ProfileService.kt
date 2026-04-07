@@ -12,8 +12,8 @@ import com.carservice.model.profile.isAdmin
 import com.carservice.model.profile.isEmployeeRole
 import java.time.LocalDate
 import com.carservice.repository.ProfileRepository
+import com.carservice.security.Auth0UserService
 import com.carservice.security.AuthorizationHelper
-import com.carservice.security.KeycloakUserService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.security.access.AccessDeniedException
@@ -24,7 +24,7 @@ import java.util.*
 class ProfileService(
     private val profileRepository: ProfileRepository,
     private val authorizationHelper: AuthorizationHelper,
-    private val keycloakUserService: KeycloakUserService
+    private val auth0UserService: Auth0UserService
 ) {
     private val logger = LoggerUtil.getLogger<ProfileService>()
 
@@ -120,7 +120,7 @@ class ProfileService(
 
     fun updatePassword(userId: UUID, newPassword: String) {
         logger.debug("Attempting to update password for user ID: {}", userId)
-        profileRepository.findById(userId.toString())
+        val profile = profileRepository.findById(userId.toString())
             .orElseThrow { NoSuchElementException("Profile with ID $userId not found") }
         val requester = authorizationHelper.getRequester()
         val isSelf = authorizationHelper.isSelf(requester, userId.toString())
@@ -130,11 +130,11 @@ class ProfileService(
         }
 
         try {
-            keycloakUserService.updateUserPassword(userId.toString(), newPassword)
+            auth0UserService.updateUserPassword(profile.auth0Id, newPassword)
             logger.info("Password updated successfully for user ID: $userId")
         } catch (e: Exception) {
             logger.error("Failed to update password for user ID $userId: ${e.message}", e)
-            throw RuntimeException("Failed to update password in Keycloak: ${e.message}", e)
+            throw RuntimeException("Failed to update password in Auth0: ${e.message}", e)
         }
     }
 
